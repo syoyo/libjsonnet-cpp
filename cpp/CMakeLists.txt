@@ -8,34 +8,34 @@ set(LIBJSONNETPP_SOURCE
     libjsonnet++.cpp
 )
 
-add_library(libjsonnet++ SHARED ${LIBJSONNETPP_HEADERS} ${LIBJSONNETPP_SOURCE})
-#add_dependencies(libjsonnet++ jsonnet)
-target_link_libraries(libjsonnet++ libjsonnet)
+add_library(libjsonnetpp SHARED ${LIBJSONNETPP_HEADERS} ${LIBJSONNETPP_SOURCE})
+#add_dependencies(libjsonnetpp jsonnet)
+target_link_libraries(libjsonnetpp libjsonnet)
 
 # CMake prepends CMAKE_SHARED_LIBRARY_PREFIX to shared libraries, so without
 # this step the output would be |liblibjsonnet|.
-set_target_properties(libjsonnet++ PROPERTIES OUTPUT_NAME jsonnet++
+set_target_properties(libjsonnetpp PROPERTIES OUTPUT_NAME jsonnetpp
 	VERSION     "0.15.0"
 	SOVERSION   "0"
 	PUBLIC_HEADER "${LIB_HEADER}")
-install(TARGETS libjsonnet++
+install(TARGETS libjsonnetpp
 	LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 	PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 if (BUILD_STATIC_LIBS)
     # Static library for jsonnet command-line tool.
-    add_library(libjsonnet++_static STATIC ${LIBJSONNETPP_SOURCE})
-    #add_dependencies(libjsonnet++_static jsonnet)
-    target_link_libraries(libjsonnet++_static libjsonnet_static)
-    set_target_properties(libjsonnet++_static PROPERTIES OUTPUT_NAME jsonnet++)
-    install(TARGETS libjsonnet++_static DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+    add_library(libjsonnetpp_static STATIC ${LIBJSONNETPP_SOURCE})
+    #add_dependencies(libjsonnetpp_static jsonnet)
+    target_link_libraries(libjsonnetpp_static libjsonnet_static)
+    set_target_properties(libjsonnetpp_static PROPERTIES OUTPUT_NAME jsonnetpp)
+    install(TARGETS libjsonnetpp_static DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
 
 if (BUILD_SHARED_BINARIES OR NOT BUILD_STATIC_LIBS)
-    add_library(libjsonnet++_for_binaries ALIAS libjsonnet++)
+    add_library(libjsonnetpp_for_binaries ALIAS libjsonnetpp)
 else()
-    add_library(libjsonnet++_for_binaries ALIAS libjsonnet++_static)
+    add_library(libjsonnetpp_for_binaries ALIAS libjsonnetpp_static)
 endif()
 
 # Tests
@@ -47,13 +47,13 @@ function(add_test_executablepp test_name)
     endif()
     add_executable(${test_name} ${test_name}.${TEST_EXT})
 
-    add_dependencies(${test_name} libjsonnet++_for_binaries libjsonnet_for_binaries GTest::Main)
+    add_dependencies(${test_name} libjsonnetpp_for_binaries libjsonnet_for_binaries GTest::Main)
     target_link_libraries(
-        ${test_name} GTest::GTest GTest::Main libjsonnet++_for_binaries libjsonnet_for_binaries)
+        ${test_name} GTest::GTest GTest::Main libjsonnetpp_for_binaries libjsonnet_for_binaries)
 endfunction()
 
 if (BUILD_TESTS)
-    add_test_executablepp(libjsonnet++_test)
+    add_test_executablepp(libjsonnetpp_test)
     # Run this in the source tree because it needs to access testdata files.
-    add_test(NAME libjsonnet++_test COMMAND ${GLOBAL_OUTPUT_PATH}/libjsonnet++_test WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/..")
+    add_test(NAME libjsonnetpp_test COMMAND ${GLOBAL_OUTPUT_PATH}/libjsonnetpp_test WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/..")
 endif()
