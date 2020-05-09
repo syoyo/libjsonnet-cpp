@@ -29,6 +29,7 @@ set(LIBJSONNET_SOURCE
     vm.cpp)
 
 add_library(libjsonnet SHARED ${LIBJSONNET_HEADERS} ${LIBJSONNET_SOURCE})
+#add_library(libjsonnet ${LIBJSONNET_HEADERS} ${LIBJSONNET_SOURCE})
 add_dependencies(libjsonnet md5)
 target_link_libraries(libjsonnet md5 nlohmann_json::nlohmann_json)
 
@@ -42,8 +43,9 @@ message("Extracted Jsonnet version: " ${JSONNET_VERSION})
 # this step the output would be |liblibjsonnet|.
 set_target_properties(libjsonnet PROPERTIES OUTPUT_NAME jsonnet
 	VERSION     "${JSONNET_VERSION}"
-	SOVERSION   "0"
-	PUBLIC_HEADER "${LIB_HEADER}")
+ 	SOVERSION   "0"
+ 	PUBLIC_HEADER "${LIB_HEADER}")
+
 install(TARGETS libjsonnet
 	LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
@@ -54,7 +56,7 @@ if (BUILD_STATIC_LIBS)
     add_library(libjsonnet_static STATIC ${LIBJSONNET_SOURCE})
     add_dependencies(libjsonnet_static md5)
     target_link_libraries(libjsonnet_static md5 nlohmann_json::nlohmann_json)
-    set_target_properties(libjsonnet_static PROPERTIES OUTPUT_NAME jsonnet)
+    set_target_properties(libjsonnet_static PROPERTIES OUTPUT_NAME jsonnet_static)
     install(TARGETS libjsonnet_static DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
 

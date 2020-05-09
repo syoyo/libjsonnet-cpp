@@ -10,7 +10,7 @@ option(BUILD_JSONNET "Build jsonnet command-line tool." OFF)
 option(BUILD_JSONNETFMT "Build jsonnetfmt command-line tool." OFF)
 option(BUILD_TESTS "Build and run jsonnet tests." OFF)
 option(BUILD_STATIC_LIBS "Build a static libjsonnet." ON)
-#option(BUILD_SHARED_BINARIES "Link binaries to the shared libjsonnet instead of the static one." OFF)
+#option(BUILD_SHARED_BINARIES "Link binaries to the shared libjsonnet instead of the static one." ON)
 option(USE_SYSTEM_JSON "Use the system-provided json library" OFF)
 set(GLOBAL_OUTPUT_PATH_SUFFIX "" CACHE STRING
     "Output artifacts directory.")
@@ -55,7 +55,7 @@ else()
 endif()
 
 # Look for libraries in global output path.
-link_directories(${GLOBAL_OUTPUT_PATH})
+#link_directories(${GLOBAL_OUTPUT_PATH})
 
 # Targets
 
