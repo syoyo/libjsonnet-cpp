@@ -9,27 +9,31 @@ set(LIBJSONNETPP_SOURCE
 )
 
 add_library(libjsonnetpp SHARED ${LIBJSONNETPP_HEADERS} ${LIBJSONNETPP_SOURCE})
-#add_dependencies(libjsonnetpp jsonnet)
-target_link_libraries(libjsonnetpp libjsonnet)
+add_dependencies(libjsonnetpp jsonnet)
+# target_link_libraries(libjsonnet libjsonnet)
 
 # CMake prepends CMAKE_SHARED_LIBRARY_PREFIX to shared libraries, so without
 # this step the output would be |liblibjsonnet|.
 set_target_properties(libjsonnetpp PROPERTIES OUTPUT_NAME jsonnetpp
-	VERSION     "0.15.0"
+	VERSION     "0.16.0"
 	SOVERSION   "0"
 	PUBLIC_HEADER "${LIB_HEADER}")
 install(TARGETS libjsonnetpp
 	LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 	PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+target_include_directories(libjsonnetpp INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
 
 if (BUILD_STATIC_LIBS)
     # Static library for jsonnet command-line tool.
     add_library(libjsonnetpp_static STATIC ${LIBJSONNETPP_SOURCE})
-    #add_dependencies(libjsonnetpp_static jsonnet)
+    add_dependencies(libjsonnetpp_static jsonnet)
     target_link_libraries(libjsonnetpp_static libjsonnet_static)
     set_target_properties(libjsonnetpp_static PROPERTIES OUTPUT_NAME jsonnetpp)
     install(TARGETS libjsonnetpp_static DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+    target_include_directories(libjsonnetpp_static INTERFACE
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
 endif()
 
 if (BUILD_SHARED_BINARIES OR NOT BUILD_STATIC_LIBS)

@@ -29,7 +29,7 @@ set(LIBJSONNET_SOURCE
     vm.cpp)
 
 add_library(libjsonnet SHARED ${LIBJSONNET_HEADERS} ${LIBJSONNET_SOURCE})
-add_dependencies(libjsonnet md5)
+add_dependencies(libjsonnet md5 stdlib)
 target_link_libraries(libjsonnet md5 nlohmann_json::nlohmann_json)
 
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../include/libjsonnet.h JSONNET_VERSION_DEF
@@ -48,14 +48,18 @@ install(TARGETS libjsonnet
 	LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 	PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+target_include_directories(libjsonnet INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
 
 if (BUILD_STATIC_LIBS)
     # Static library for jsonnet command-line tool.
     add_library(libjsonnet_static STATIC ${LIBJSONNET_SOURCE})
-    add_dependencies(libjsonnet_static md5)
+    add_dependencies(libjsonnet_static md5 stdlib)
     target_link_libraries(libjsonnet_static md5 nlohmann_json::nlohmann_json)
     set_target_properties(libjsonnet_static PROPERTIES OUTPUT_NAME jsonnet)
     install(TARGETS libjsonnet_static DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+    target_include_directories(libjsonnet_static INTERFACE
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
 endif()
 
 if (BUILD_SHARED_BINARIES OR NOT BUILD_STATIC_LIBS)
