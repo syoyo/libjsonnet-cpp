@@ -9,7 +9,7 @@ set(LIBJSONNETPP_SOURCE
 )
 
 add_library(libjsonnetpp SHARED ${LIBJSONNETPP_HEADERS} ${LIBJSONNETPP_SOURCE})
-add_dependencies(libjsonnetpp jsonnet)
+add_dependencies(libjsonnetpp jsonnet_static)
 # target_link_libraries(libjsonnet libjsonnet)
 
 # CMake prepends CMAKE_SHARED_LIBRARY_PREFIX to shared libraries, so without
@@ -30,7 +30,7 @@ if (BUILD_STATIC_LIBS)
     add_library(libjsonnetpp_static STATIC ${LIBJSONNETPP_SOURCE})
     add_dependencies(libjsonnetpp_static jsonnet)
     target_link_libraries(libjsonnetpp_static libjsonnet_static)
-    set_target_properties(libjsonnetpp_static PROPERTIES OUTPUT_NAME jsonnetpp)
+    set_target_properties(libjsonnetpp_static PROPERTIES OUTPUT_NAME jsonnetpp_static)
     install(TARGETS libjsonnetpp_static DESTINATION "${CMAKE_INSTALL_LIBDIR}")
     target_include_directories(libjsonnetpp_static INTERFACE
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
