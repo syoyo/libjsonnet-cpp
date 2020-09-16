@@ -28,36 +28,38 @@ set(LIBJSONNET_SOURCE
     string_utils.cpp
     vm.cpp)
 
-add_library(libjsonnet SHARED ${LIBJSONNET_HEADERS} ${LIBJSONNET_SOURCE})
-add_dependencies(libjsonnet md5 stdlib)
-#add_library(libjsonnet ${LIBJSONNET_HEADERS} ${LIBJSONNET_SOURCE})
-#add_dependencies(libjsonnet md5)
-target_link_libraries(libjsonnet md5 nlohmann_json::nlohmann_json)
+if (NOT LIBJSONNET_BUILD_STATIC_LIBS)
+  add_library(libjsonnet SHARED ${LIBJSONNET_HEADERS} ${LIBJSONNET_SOURCE})
+  add_dependencies(libjsonnet md5)
+  #add_library(libjsonnet ${LIBJSONNET_HEADERS} ${LIBJSONNET_SOURCE})
+  #add_dependencies(libjsonnet md5)
+  target_link_libraries(libjsonnet md5 nlohmann_json::nlohmann_json)
 
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../include/libjsonnet.h JSONNET_VERSION_DEF
-     REGEX "[#]define[ \t]+LIB_JSONNET_VERSION[ \t]+")
-string(REGEX REPLACE ".*\"v([^\"]+)\".*" "\\1" JSONNET_VERSION ${JSONNET_VERSION_DEF})
-message("Extracted Jsonnet version: " ${JSONNET_VERSION})
+  file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../include/libjsonnet.h JSONNET_VERSION_DEF
+       REGEX "[#]define[ \t]+LIB_JSONNET_VERSION[ \t]+")
+  string(REGEX REPLACE ".*\"v([^\"]+)\".*" "\\1" JSONNET_VERSION ${JSONNET_VERSION_DEF})
+  message("Extracted Jsonnet version: " ${JSONNET_VERSION})
 
 
-# CMake prepends CMAKE_SHARED_LIBRARY_PREFIX to shared libraries, so without
-# this step the output would be |liblibjsonnet|.
-set_target_properties(libjsonnet PROPERTIES OUTPUT_NAME jsonnet
-	VERSION     "${JSONNET_VERSION}"
- 	SOVERSION   "0"
- 	PUBLIC_HEADER "${LIB_HEADER}")
+  # CMake prepends CMAKE_SHARED_LIBRARY_PREFIX to shared libraries, so without
+  # this step the output would be |liblibjsonnet|.
+  set_target_properties(libjsonnet PROPERTIES OUTPUT_NAME jsonnet
+  	VERSION     "${JSONNET_VERSION}"
+   	SOVERSION   "0"
+   	PUBLIC_HEADER "${LIB_HEADER}")
 
-install(TARGETS libjsonnet
-	LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-	PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
-target_include_directories(libjsonnet INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
+  install(TARGETS libjsonnet
+  	LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  	PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+  target_include_directories(libjsonnet INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
+endif()
 
-if (BUILD_STATIC_LIBS)
+if (LIBJSONNET_BUILD_STATIC_LIBS)
     # Static library for jsonnet command-line tool.
     add_library(libjsonnet_static STATIC ${LIBJSONNET_SOURCE})
-    add_dependencies(libjsonnet_static md5 stdlib)
+    add_dependencies(libjsonnet_static md5)
     target_link_libraries(libjsonnet_static md5 nlohmann_json::nlohmann_json)
     set_target_properties(libjsonnet_static PROPERTIES OUTPUT_NAME jsonnet_static)
     install(TARGETS libjsonnet_static DESTINATION "${CMAKE_INSTALL_LIBDIR}")
@@ -65,7 +67,7 @@ if (BUILD_STATIC_LIBS)
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>)
 endif()
 
-if (BUILD_SHARED_BINARIES OR NOT BUILD_STATIC_LIBS)
+if (NOT LIBJSONNET_BUILD_STATIC_LIBS)
     add_library(libjsonnet_for_binaries ALIAS libjsonnet)
 else()
     add_library(libjsonnet_for_binaries ALIAS libjsonnet_static)
@@ -86,7 +88,7 @@ function(add_test_executable test_name)
         ${test_name} GTest::GTest GTest::Main libjsonnet_for_binaries)
 endfunction()
 
-if (BUILD_TESTS)
+if (LIBJSONNET_BUILD_TESTS)
     add_test_executable(lexer_test)
     add_test(lexer_test ${GLOBAL_OUTPUT_PATH}/lexer_test)
 

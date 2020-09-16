@@ -8,8 +8,8 @@ project(jsonnet C CXX)
 # User-configurable options.
 option(BUILD_JSONNET "Build jsonnet command-line tool." OFF)
 option(BUILD_JSONNETFMT "Build jsonnetfmt command-line tool." OFF)
-option(BUILD_TESTS "Build and run jsonnet tests." OFF)
-option(BUILD_STATIC_LIBS "Build a static libjsonnet." ON)
+option(LIBJSONNET_BUILD_TESTS "Build and run jsonnet tests." OFF)
+option(LIBJSONNET_BUILD_STATIC_LIBS "Build a static libjsonnet(Off = build dynamic lib)." ON)
 #option(BUILD_SHARED_BINARIES "Link binaries to the shared libjsonnet instead of the static one." ON)
 option(USE_SYSTEM_JSON "Use the system-provided json library" OFF)
 set(GLOBAL_OUTPUT_PATH_SUFFIX "" CACHE STRING
